@@ -29,7 +29,7 @@
     if (self) {
         self.colorProvider = [DTMColorProvider new];
 //        self.scalePower = kSBScalePower;
-        self.screenPointsPerBucket = kSBScreenPointsPerBucket;
+//        self.screenPointsPerBucket = kSBScreenPointsPerBucket;
     }
     return self;
 }
