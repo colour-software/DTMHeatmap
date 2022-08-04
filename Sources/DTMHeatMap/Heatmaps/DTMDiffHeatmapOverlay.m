@@ -5,10 +5,10 @@
 //  Copyright (c) 2015 Dataminr. All rights reserved.
 //
 
-#import "DTMDiffHeatmap.h"
+#import "DTMDiffHeatmapOverlay.h"
 #import "DTMDiffColorProvider.h"
 
-@interface DTMDiffHeatmap ()
+@interface DTMDiffHeatmapOverlay ()
 @property double maxValue;
 @property double zoomedOutMax;
 @property NSDictionary *pointsWithHeat;
@@ -16,7 +16,7 @@
 @property MKMapRect boundingRect;
 @end
 
-@implementation DTMDiffHeatmap
+@implementation DTMDiffHeatmapOverlay
 
 @synthesize maxValue, pointsWithHeat = _pointsWithHeat;
 @synthesize zoomedOutMax;

@@ -77,7 +77,7 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
         MKMapRect paddedMapRect = [self mapRectForRect:paddedRect];
         
         // Get the dictionary of values out of the model for this mapRect and zoomScale.
-        DTMHeatmap *hm = (DTMHeatmap *)self.overlay;
+        DTMHeatmapOverlay *hm = (DTMHeatmapOverlay *)self.overlay;
         NSDictionary *heat = [hm mapPointsWithHeatInMapRect:paddedMapRect
                                                     atScale:zoomScale];
         

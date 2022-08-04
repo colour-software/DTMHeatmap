@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 Dataminr. All rights reserved.
 //
 
-#import "DTMHeatmap.h"
+#import "DTMHeatmapOverlay.h"
 
-@interface DTMDiffHeatmap : DTMHeatmap
+@interface DTMDiffHeatmapOverlay : DTMHeatmapOverlay
 
 - (void)setBeforeData:(NSDictionary *)before
             afterData:(NSDictionary *)after;

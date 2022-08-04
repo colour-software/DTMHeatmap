@@ -7,7 +7,7 @@
 //
 
 #import <MapKit/MapKit.h>
-#import "DTMHeatmap.h"
+#import "DTMHeatmapOverlay.h"
 
 @interface DTMHeatmapRenderer : MKOverlayRenderer
 

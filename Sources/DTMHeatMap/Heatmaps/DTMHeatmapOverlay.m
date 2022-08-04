@@ -6,10 +6,10 @@
 //  Copyright (c) 2015 Dataminr. All rights reserved.
 //
 
-#import "DTMHeatmap.h"
+#import "DTMHeatmapOverlay.h"
 #import "DTMColorProvider.h"
 
-@interface DTMHeatmap ()
+@interface DTMHeatmapOverlay ()
 @property double maxValue;
 @property double zoomedOutMax;
 @property NSDictionary *pointsWithHeat;
@@ -17,7 +17,7 @@
 @property MKMapRect boundingRect;
 @end
 
-@implementation DTMHeatmap
+@implementation DTMHeatmapOverlay
 
 @synthesize maxValue, pointsWithHeat = _pointsWithHeat;
 @synthesize zoomedOutMax;
