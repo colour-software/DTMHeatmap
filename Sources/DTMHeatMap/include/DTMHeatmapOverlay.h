@@ -29,7 +29,7 @@ static const int kSBScreenPointsPerBucket = 10;
 
 @property (strong, nonatomic) DTMColorProvider *colorProvider;
 
-@property (nonatomic) int scalePower;
+@property (nonatomic) double scalePower;
 @property (nonatomic) int screenPointsPerBucket;
 @property (nonatomic, readonly) double maxValue;
 @property (readonly) double zoomedOutMax;
