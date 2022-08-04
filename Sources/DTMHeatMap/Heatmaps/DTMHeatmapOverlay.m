@@ -28,7 +28,7 @@
     self = [super init];
     if (self) {
         self.colorProvider = [DTMColorProvider new];
-        self.scalePower = kSBScalePower;
+//        self.scalePower = kSBScalePower;
         self.screenPointsPerBucket = kSBScreenPointsPerBucket;
     }
     return self;
