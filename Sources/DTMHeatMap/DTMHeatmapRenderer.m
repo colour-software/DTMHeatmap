@@ -31,7 +31,7 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
         heatRadiusInPoints = heatRadius;
         _scaleMatrix = malloc(2 * heatRadiusInPoints * 2 * heatRadiusInPoints * sizeof(float));
         [self populateScaleMatrix];
-//        self.zoomNormalization = false;
+        self.zoomNormalization = false;
     }
     
     return self;
