@@ -121,32 +121,22 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
                                               (usPoint.y - usRect.origin.y) * zoomScale + 1);
             
             if (value != 0 && !isnan(value)) { // don't bother with 0 or NaN
-                // just looping through the indices with values
-                NSInteger newRadius = kSBHeatRadiusInPoints * (1-scaleFix);
-                if (newRadius > kSBHeatRadiusInPoints) {
-                    newRadius = kSBHeatRadiusInPoints;
-                }
-                NSInteger excess = kSBHeatRadiusInPoints - newRadius;
-                
                 // iterate through surrounding pixels and increase
-                for (int i = 0; i < 2 * newRadius; i++) {
-                    for (int j = 0; j < 2 * newRadius; j++) {
-
+                for (int i = 0; i < 2 * heatRadiusInPoints; i++) {
+                    for (int j = 0; j < 2 * heatRadiusInPoints; j++) {
                         // find the array index
-                        int column = floor(matrixCoord.x - newRadius + i);
-                        int row = floor(matrixCoord.y - newRadius + j);
-
+                        int column = floor(matrixCoord.x - heatRadiusInPoints + i);
+                        int row = floor(matrixCoord.y - heatRadiusInPoints + j);
+                        
                         // make sure this is a valid array index
                         if (row >= 0 && column >= 0 && row < rows && column < columns) {
                             int index = columns * row + column;
-                            double m = _scaleMatrix[(j+excess) * 2 * kSBHeatRadiusInPoints + (i+excess)] - scaleFix;
-                            m /= (1.0-(scaleFix));
-                            if (m < 0) {
-                                m = 0;
-                                continue;
-                            }
-                            double addVal = value * m;
+                            double addVal = value * _scaleMatrix[j * 2 * heatRadiusInPoints + i] - scaleFix;
                             pointValues[index] += addVal;
+                            
+                            if (pointValues[index] > maxValue) {
+                                maxValue = pointValues[index];
+                            }
                         }
                     }
                 }
