@@ -101,7 +101,7 @@
     NSMutableDictionary *toReturn = [[NSMutableDictionary alloc] init];
     int bucketDelta = self.screenPointsPerBucket / scale;
     
-    double adjustmentFactor = scale / 1.5;
+    double adjustmentFactor = scale / 1.25;
     double adjustedScale = scale - adjustmentFactor;
     double zoomScale = log2(1 / adjustedScale);
     double slope = (self.zoomedOutMax - self.maxValue) / (kSBZoomLevels - 1);
