@@ -102,14 +102,9 @@
     int bucketDelta = self.screenPointsPerBucket / scale;
     
     double zoomScale = log2(1/scale);
-    
-//    if (zoomScale < 1) {
-//        zoomScale = 1;
-//    }
-    
     double slope = (self.zoomedOutMax - self.maxValue) / (kSBZoomLevels - 1);
-    double x = pow(zoomScale, self.scalePower) / pow(kSBZoomLevels, self.scalePower - 1);
-    double scaleFactor = (x - 1) * slope + self.maxValue;
+    double x = pow(zoomScale, self.scalePower) / pow(kSBZoomLevels, self.scalePower - 0.5);
+    double scaleFactor = (x - 0.5) * slope + self.maxValue;
    
     if (scaleFactor < self.maxValue) {
         scaleFactor = self.maxValue;
