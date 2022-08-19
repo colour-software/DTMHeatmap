@@ -50,12 +50,9 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
             float scaleFactor = 1 - distance / heatRadiusInPoints;
             if (scaleFactor < 0) {
                 scaleFactor = 0;
-            } else if (scaleFactor > 1) {
-                scaleFactor = 1;
+            } else {
+                scaleFactor = (expf(-distance/10.0) - expf(-heatRadiusInPoints/10.0)) / expf(0);
             }
-//            else {
-//                scaleFactor = (expf(-distance/10.0) - expf(-heatRadiusInPoints/10.0)) / expf(0);
-//            }
             
             _scaleMatrix[j * 2 * heatRadiusInPoints + i] = scaleFactor;
         }
@@ -66,24 +63,10 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
           zoomScale:(MKZoomScale)zoomScale
           inContext:(CGContextRef)context
 {
-    double scaleFix = 1 - zoomScale/0.5;
-    if (scaleFix > 1) {
-        scaleFix = 1;
-    }
-
-    if (scaleFix >= 0.999) {
-        scaleFix *= 0.97;
-    } else if (scaleFix >= 0.998) {
-        scaleFix *= 0.98;
-    } else {
-        scaleFix *= 0.99;
-    }
-    
     CGRect usRect = [self rectForMapRect:mapRect]; //rect in user space coordinates (NOTE: not in screen points)
-//    MKMapRect visibleRect = [self.overlay boundingMapRect];
-//    MKMapRect mapIntersect = MKMapRectIntersection(mapRect, visibleRect);
-//    CGRect usIntersect = [self rectForMapRect:mapIntersect]; //rect in user space coordinates (NOTE: not in screen points)
-    CGRect usIntersect = usRect;
+    MKMapRect visibleRect = [self.overlay boundingMapRect];
+    MKMapRect mapIntersect = MKMapRectIntersection(mapRect, visibleRect);
+    CGRect usIntersect = [self rectForMapRect:mapIntersect]; //rect in user space coordinates (NOTE: not in screen points)
     
     int columns = ceil(CGRectGetWidth(usRect) * zoomScale);
     int rows = ceil(CGRectGetHeight(usRect) * zoomScale);
@@ -117,8 +100,8 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
             // figure out the correspoinding array index
             CGPoint usPoint = [self pointForMapPoint:mapPoint];
             
-            CGPoint matrixCoord = CGPointMake((usPoint.x - usRect.origin.x) * zoomScale + 1,
-                                              (usPoint.y - usRect.origin.y) * zoomScale + 1);
+            CGPoint matrixCoord = CGPointMake((usPoint.x - usRect.origin.x) * zoomScale,
+                                              (usPoint.y - usRect.origin.y) * zoomScale);
             
             if (value != 0 && !isnan(value)) { // don't bother with 0 or NaN
                 // iterate through surrounding pixels and increase
@@ -131,7 +114,7 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
                         // make sure this is a valid array index
                         if (row >= 0 && column >= 0 && row < rows && column < columns) {
                             int index = columns * row + column;
-                            double addVal = value * _scaleMatrix[j * 2 * heatRadiusInPoints + i] - scaleFix;
+                            double addVal = value * _scaleMatrix[j * 2 * heatRadiusInPoints + i];
                             pointValues[index] += addVal;
                             
                             if (pointValues[index] > maxValue) {
