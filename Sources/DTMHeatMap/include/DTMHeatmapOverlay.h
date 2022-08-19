@@ -12,7 +12,7 @@
 static const CGFloat kSBMapRectPadding = 100000;
 static const int kSBZoomZeroDimension = 256;
 static const int kSBMapKitPoints = 536870912;
-static const int kSBZoomLevels = 2;
+static const int kSBZoomLevels = 1;
 
 // Alterable constant to change look of heat map
 static const int kSBScalePower = 4;
