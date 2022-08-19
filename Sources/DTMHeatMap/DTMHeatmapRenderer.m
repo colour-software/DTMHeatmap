@@ -50,9 +50,12 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
             float scaleFactor = 1 - distance / heatRadiusInPoints;
             if (scaleFactor < 0) {
                 scaleFactor = 0;
-            } else {
-                scaleFactor = (expf(-distance/10.0) - expf(-heatRadiusInPoints/10.0)) / expf(0);
+            } else if (scaleFactor > 1) {
+                scaleFactor = 1;
             }
+//            else {
+//                scaleFactor = (expf(-distance/10.0) - expf(-heatRadiusInPoints/10.0)) / expf(0);
+//            }
             
             _scaleMatrix[j * 2 * heatRadiusInPoints + i] = scaleFactor;
         }
@@ -63,10 +66,24 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
           zoomScale:(MKZoomScale)zoomScale
           inContext:(CGContextRef)context
 {
+    double scaleFix = 1 - zoomScale/0.5;
+    if (scaleFix > 1) {
+        scaleFix = 1;
+    }
+
+    if (scaleFix >= 0.999) {
+        scaleFix *= 0.97;
+    } else if (scaleFix >= 0.998) {
+        scaleFix *= 0.98;
+    } else {
+        scaleFix *= 0.99;
+    }
+    
     CGRect usRect = [self rectForMapRect:mapRect]; //rect in user space coordinates (NOTE: not in screen points)
-    MKMapRect visibleRect = [self.overlay boundingMapRect];
-    MKMapRect mapIntersect = MKMapRectIntersection(mapRect, visibleRect);
-    CGRect usIntersect = [self rectForMapRect:mapIntersect]; //rect in user space coordinates (NOTE: not in screen points)
+//    MKMapRect visibleRect = [self.overlay boundingMapRect];
+//    MKMapRect mapIntersect = MKMapRectIntersection(mapRect, visibleRect);
+//    CGRect usIntersect = [self rectForMapRect:mapIntersect]; //rect in user space coordinates (NOTE: not in screen points)
+    CGRect usIntersect = usRect;
     
     int columns = ceil(CGRectGetWidth(usRect) * zoomScale);
     int rows = ceil(CGRectGetHeight(usRect) * zoomScale);
@@ -100,26 +117,36 @@ static const NSInteger kSBHeatRadiusInPoints = 48;
             // figure out the correspoinding array index
             CGPoint usPoint = [self pointForMapPoint:mapPoint];
             
-            CGPoint matrixCoord = CGPointMake((usPoint.x - usRect.origin.x) * zoomScale,
-                                              (usPoint.y - usRect.origin.y) * zoomScale);
+            CGPoint matrixCoord = CGPointMake((usPoint.x - usRect.origin.x) * zoomScale + 1,
+                                              (usPoint.y - usRect.origin.y) * zoomScale + 1);
             
             if (value != 0 && !isnan(value)) { // don't bother with 0 or NaN
+                // just looping through the indices with values
+                NSInteger newRadius = kSBHeatRadiusInPoints * (1-scaleFix);
+                if (newRadius > kSBHeatRadiusInPoints) {
+                    newRadius = kSBHeatRadiusInPoints;
+                }
+                NSInteger excess = kSBHeatRadiusInPoints - newRadius;
+                
                 // iterate through surrounding pixels and increase
-                for (int i = 0; i < 2 * heatRadiusInPoints; i++) {
-                    for (int j = 0; j < 2 * heatRadiusInPoints; j++) {
+                for (int i = 0; i < 2 * newRadius; i++) {
+                    for (int j = 0; j < 2 * newRadius; j++) {
+
                         // find the array index
-                        int column = floor(matrixCoord.x - heatRadiusInPoints + i);
-                        int row = floor(matrixCoord.y - heatRadiusInPoints + j);
-                        
+                        int column = floor(matrixCoord.x - newRadius + i);
+                        int row = floor(matrixCoord.y - newRadius + j);
+
                         // make sure this is a valid array index
                         if (row >= 0 && column >= 0 && row < rows && column < columns) {
                             int index = columns * row + column;
-                            double addVal = value * _scaleMatrix[j * 2 * heatRadiusInPoints + i];
-                            pointValues[index] += addVal;
-                            
-                            if (pointValues[index] > maxValue) {
-                                maxValue = pointValues[index];
+                            double m = _scaleMatrix[(j+excess) * 2 * kSBHeatRadiusInPoints + (i+excess)] - scaleFix;
+                            m /= (1.0-(scaleFix));
+                            if (m < 0) {
+                                m = 0;
+                                continue;
                             }
+                            double addVal = value * m;
+                            pointValues[index] += addVal;
                         }
                     }
                 }
